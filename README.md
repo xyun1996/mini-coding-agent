@@ -9,3 +9,5 @@ subagent 调用工具读取文件 / 搜索代码 / 分析问题
 主 Agent 汇总结果
 ↓
 输出修改建议或 patch
+
+ReAct范式
