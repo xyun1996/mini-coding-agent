@@ -71,10 +71,12 @@ export function createBashToolDefinition(
                 stdio: ["ignore", "pipe", "pipe"],
                 windowsHide: true,
             })
+            let timedOut = false;
+            let aborted = false;
             const onAbort = () => {
+                aborted = true;
                 if (child.pid) KillProcessTree(child.pid);
             }
-            let timedOut = false;
             try {
                 child.stdout?.on("data", handleStdout);
                 child.stderr?.on("data", handleStderr);
@@ -88,6 +90,10 @@ export function createBashToolDefinition(
                     else signal.addEventListener("abort", onAbort, { once: true });
                 }
                 const exitCode = await waitForChildProcess(child);
+
+                if (aborted) {
+                    throw new Error("Operation aborted");
+                }
 
                 // Truncate output if needed
                 let truncated: string | undefined;

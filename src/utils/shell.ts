@@ -11,10 +11,10 @@ export function GetShellConfig(): ShellConfig {
     if (process.platform == "win32") {
         let path = `${process.env.ProgramFiles}\\Powershell\\7\\pwsh.exe`;
         if (existsSync(path)) {
-            return { type: "powershell", path: path, args: ["-NoProfile", "-Command"] }
+            return { type: "powershell", path: path, args: ["-NoProfile", "-Command", "$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"] }
         }
         path = `${process.env.SystemRoot}\\System32\\cmd.exe`;
-        return { type: "cmd", path: path, args: ["-c"] }
+        return { type: "cmd", path: path, args: ["/c", "chcp 65001 >nul &&"] }
     } else {
         if (existsSync("/bin/bash")) {
             return { type: "bash", path: "/bin/bash", args: ["-c"] }
@@ -33,8 +33,8 @@ export function GetShellConfig(): ShellConfig {
 const SHELL_CONFIGS: Record<ShellType, Omit<ShellConfig, "type">> = {
     bash: { path: "/bin/bash", args: ["-c"] },
     sh: { path: "/bin/sh", args: ["-c"] },
-    powershell: { path: "pwsh.exe", args: ["-NoProfile", "-Command"] },
-    cmd: { path: "cmd.exe", args: ["/c"] },
+    powershell: { path: "pwsh.exe", args: ["-NoProfile", "-Command", "$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;"] },
+    cmd: { path: "cmd.exe", args: ["/c", "chcp 65001 >nul &&"] },
 };
 
 export function GetShellConfigByType(type: ShellType): ShellConfig {
